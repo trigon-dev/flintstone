@@ -1,15 +1,10 @@
--- Single-file executor loader
-
 local HttpService = game:GetService("HttpService")
 
--- REPLACE this with your raw JSON URL
 local CONFIG_URL =
 "https://raw.githubusercontent.com/trigon-dev/flintstone/refs/heads/main/places.json"
 
 
--- Safely fetch & run a script from `url`
 local function safeLoad(url)
-    -- 1) fetch
     local ok, res = pcall(function()
         return HttpService:GetAsync(url, true)
     end)
@@ -18,14 +13,12 @@ local function safeLoad(url)
         return
     end
 
-    -- 2) compile
     local fn, err = loadstring(res)
     if not fn then
         warn("safeLoad compile error:", url, err)
         return
     end
 
-    -- 3) execute
     local success, runtimeErr = pcall(fn)
     if not success then
         warn("safeLoad runtime error:", url, runtimeErr)
@@ -33,7 +26,6 @@ local function safeLoad(url)
 end
 
 
--- 1) fetch config
 local ok, raw = pcall(function()
     return HttpService:GetAsync(CONFIG_URL, true)
 end)
@@ -41,7 +33,6 @@ if not ok then
     return warn("Could not GET config:", raw)
 end
 
--- 2) parse JSON
 local config
 ok, config = pcall(function()
     return HttpService:JSONDecode(raw)
@@ -50,7 +41,6 @@ if not ok or type(config) ~= "table" then
     return warn("Invalid JSON:", config)
 end
 
--- 3) select scripts for this PlaceId
 local idKey = tostring(game.PlaceId)
 local urls  = config[idKey]
 

@@ -1,5 +1,4 @@
 local HttpService = game:GetService("HttpService")
-
 local CONFIG_URL = "https://raw.githubusercontent.com/trigon-dev/flintstone/refs/heads/main/places.json"
 
 local function safeLoad(url)
@@ -23,26 +22,25 @@ local function safeLoad(url)
     end
 end
 
-
 local ok, raw = pcall(function()
     return HttpService:GetAsync(CONFIG_URL, true)
 end)
 if not ok then
-    return warn("Could not GET config:", raw)
+    warn("Could not GET config:", raw)
+    return
 end
 
 local config
-ok, config = pcall(function()
-    return HttpService:JSONDecode(raw)
+local decodeOk, decodeErr = pcall(function()
+    config = HttpService:JSONDecode(raw)
 end)
-if not ok or type(config) ~= "table" then
-    return warn("Invalid JSON:", config)
+if not decodeOk or type(config) ~= "table" then
+    warn("Invalid JSON:", decodeErr or config)
+    return
 end
 
-local idKey = tostring(game.PlaceId)
-local urls  = config[idKey]
-
-if urls and #urls > 0 then
+local urls = config[tostring(game.PlaceId)]
+if urls and type(urls) == "table" then
     for _, url in ipairs(urls) do
         safeLoad(url)
         wait(config.delayBetween or 5)

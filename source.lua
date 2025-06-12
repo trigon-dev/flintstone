@@ -1,5 +1,6 @@
 local HttpService = game:GetService("HttpService")
-local CONFIG_URL = "https://raw.githubusercontent.com/trigon-dev/flintstone/refs/heads/main/places.json"
+local CONFIG_URL =
+  "https://raw.githubusercontent.com/trigon-dev/flintstone/main/places.json"
 
 local function safeLoad(url)
     local ok, res = pcall(function()
